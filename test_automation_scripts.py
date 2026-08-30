@@ -1,4 +1,3 @@
-python
 import json
 from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
@@ -66,13 +65,13 @@ def test_fetch_keys_invalid_json():
     mock_resp.raise_for_status.return_value = None
     mock_resp.json.side_effect = json.JSONDecodeError("msg", doc="{}", pos=0)
 
+    # fetch_keys only catches requests.RequestException, and JSONDecodeError is
+    # not a subclass of it, so a malformed body propagates to the caller rather
+    # than being swallowed into an empty list.
     with patch("requests.get", return_value=mock_resp) as mock_get:
-        result = script_under_test.fetch_keys(host)
+        with pytest.raises(json.JSONDecodeError):
+            script_under_test.fetch_keys(host)
 
-    # The function catches RequestException, JSONDecodeError is not a subclass,
-    # so it propagates; we assert that the exception bubbles up.
-    # If you prefer to treat it as a failure, adjust the implementation.
-    assert isinstance(result, list)  # should not happen; just a safety check
     mock_get.assert_called_once_with(url, timeout=script_under_test.REQUEST_TIMEOUT)
 
 
@@ -110,7 +109,6 @@ def test_is_key_stale_false_when_within_max():
 
 
 def test_is_key_stale_handles_invalid_format():
-    # An invalid timestamp should be treated as stale (implementation dependent)
-    # Here we expect the function to raise a ValueError from datetime parsing.
-    with pytest.raises(ValueError):
-        script_under_test.is_key_stale("not-a-timestamp")
+    # is_key_stale catches the parse error, logs a warning and reports the key
+    # as stale, which is the fail-safe behaviour its docstring describes.
+    assert script_under_test.is_key_stale("not-a-timestamp") is True
