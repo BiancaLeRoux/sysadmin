@@ -1,0 +1,11 @@
+# Native Windows ARM64 (Snapdragon X) stack. Requires Python 3.12 ARM64 from python.org.
+# Install with:  pip install -r requirements-arm64.txt
+numpy>=2.0,<3
+pillow>=12
+onnxruntime>=1.29
+onnxruntime-qnn>=2.6
+onnx>=1.17
+# No official opencv-python win_arm64 wheel exists (opencv/opencv#28244). This is the
+# experimental community build for CPython 3.12 (cgohlke/win_arm64-wheels, v2024.6.15).
+opencv-python-headless @ https://github.com/cgohlke/win_arm64-wheels/releases/download/v2024.6.15/opencv_python_headless-4.10.0.82-cp312-cp312-win_arm64.whl ; sys_platform == "win32" and platform_machine == "ARM64"
+opencv-python-headless>=4.10 ; not (sys_platform == "win32" and platform_machine == "ARM64")

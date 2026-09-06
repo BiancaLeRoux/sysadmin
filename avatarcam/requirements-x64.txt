@@ -1,0 +1,8 @@
+# Fallback: x64 Python running under Windows-on-ARM emulation (Prism), GPU via DirectML.
+# Also the right file for any ordinary x64 Windows PC.
+numpy>=2.0,<3
+pillow>=12
+opencv-python-headless>=4.10
+onnxruntime-directml>=1.20
+pyvirtualcam>=0.11
+onnx>=1.16

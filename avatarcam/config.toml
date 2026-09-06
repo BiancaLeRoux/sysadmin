@@ -1,0 +1,77 @@
+# AvatarCam configuration. Values here are defaults; the control panel can change most of
+# them live and "Save preset" writes them back.
+
+[camera]
+index = 0              # camera device index (see `avatarcam --list-cameras`)
+width = 1280
+height = 720
+fps = 30
+mirror = false         # flip horizontally for a mirror-like preview
+
+[runtime]
+# Ordered execution-provider preference. Unavailable providers are skipped.
+# qnn-htp = Qualcomm NPU, qnn-gpu = Adreno GPU via QNN, dml = DirectML, cuda, coreml, cpu
+providers = ["qnn-htp", "qnn-gpu", "dml", "cuda", "coreml", "cpu"]
+# Per-model overrides, e.g. run the matting network on CPU because it is dynamic-shape.
+# [runtime.overrides]
+# rvm = ["cpu"]
+threads = 0            # 0 = ORT default
+context_cache = true   # cache compiled QNN graphs next to the model files
+models_dir = ""        # empty = %LOCALAPPDATA%\AvatarCam\models (Windows) or ~/.cache/avatarcam/models
+
+[avatar]
+profile = ""           # path to identity profile (.npz) produced by `avatarcam-prepare`
+
+[face]
+enabled = true
+detect_size = 320      # SCRFD input size (square)
+detect_every = 3       # run the detector every N frames; track landmarks in between
+detect_threshold = 0.5
+swap_strength = 1.0    # 0..1 blend of swapped face over original
+mask = "box"           # box | region  (region = BiSeNet face parsing, slower)
+mask_blur = 0.3        # feather as fraction of crop size
+mask_padding = [0.0, 0.0, 0.0, 0.0]   # top,right,bottom,left as fraction of crop, positive shrinks
+occlusion = true       # XSeg occlusion mask keeps hands/hair/glasses in front of the face
+keep_mouth = false     # keep your real mouth (needs mask = "region")
+color_transfer = true  # match swapped face colour statistics to your face
+smoothing = 0.6        # 0..1 temporal smoothing of landmarks (one-euro filter strength)
+fade_frames = 8        # frames to fade the swap in/out when the face is lost/found
+
+[enhance]
+enabled = true
+model = "gpen_bfr_256" # gpen_bfr_256 (fast) | gfpgan_1.4 (slower, sharper)
+strength = 0.6         # 0..1 blend of the enhanced face
+every = 1              # run every N frames (raise if the enhancer is the bottleneck)
+
+[body]
+enabled = false
+matting = true         # RVM person matting (needed for background and clean warps)
+matting_size = 384     # width of the matting input (height follows aspect)
+pose = true            # YOLOv8-pose keypoints drive the reshape
+pose_every = 2
+background = "none"    # none | blur | color | image
+background_color = [24, 24, 24]
+background_image = ""
+background_blur = 25
+# Reshape sliders. 0 = no change. Negative slims / shortens, positive widens / lengthens.
+waist = 0.0            # -1..1
+hips = 0.0
+shoulders = 0.0
+thighs = 0.0
+arms = 0.0
+height = 0.0           # -0.3..0.3, stretches the body vertically with feet fixed
+warp_smoothing = 0.7   # temporal smoothing of the warp field
+hair_recolor = false
+hair_color = [60, 40, 25]    # RGB target
+hair_strength = 0.6
+skin_smooth = 0.0      # 0..1 bilateral smoothing on skin inside the matte
+
+[output]
+preview = true
+preview_scale = 1.0
+capture_mode = false   # borderless window sized to the frame, for OBS Window Capture
+virtual_camera = false # needs pyvirtualcam + OBS Virtual Camera driver
+virtual_camera_fps = 30
+hud = true             # FPS/latency overlay in the preview window (never sent to the virtual camera)
+disclosure = false     # small "AI-altered video" label burned into the output
+disclosure_text = "AI-altered video"

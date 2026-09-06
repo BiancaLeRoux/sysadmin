@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.venv/
+*.npz
+*.egg-info/
+avatarcam/run.bat
+avatarcam/run_bench.bat
+avatarcam/prepare_avatar.bat

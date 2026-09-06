@@ -1,0 +1,9 @@
+yolov8n-pose-320.onnx was exported from the Ultralytics yolov8n-pose.pt checkpoint
+(https://github.com/ultralytics/assets/releases/download/v8.2.0/yolov8n-pose.pt)
+with `YOLO('yolov8n-pose.pt').export(format='onnx', imgsz=320, opset=17, simplify=True)`.
+
+The weights are licensed by Ultralytics under the GNU Affero General Public License v3.0
+(https://github.com/ultralytics/ultralytics/blob/main/LICENSE). They are included here as a
+separate, unmodified-in-substance derivative for convenience on platforms where the export
+toolchain does not install (Windows on ARM). The AvatarCam source code (MIT) does not
+derive from Ultralytics code; only this model file is subject to AGPL-3.0.
