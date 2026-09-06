@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 import cv2
 import numpy as np
 
-from .pose import (L_ANK, L_ELB, L_HIP, L_KNE, L_SHO, L_WRI, NOSE, R_ANK, R_ELB, R_HIP, R_KNE, R_SHO, R_WRI, Pose)
+from .pose import (L_ANK, L_EAR, L_ELB, L_EYE, L_HIP, L_KNE, L_SHO, L_WRI, NOSE, R_ANK, R_EAR, R_ELB, R_EYE, R_HIP, R_KNE, R_SHO, R_WRI, Pose)
 
 
 @dataclass
@@ -109,10 +109,11 @@ def build_control_points(pose: Pose, alpha: np.ndarray | None, params: ReshapePa
         x0, y0, x1, y1 = face_bbox
         for p in ((x0, y0), (x1, y0), (x0, y1), (x1, y1), ((x0 + x1) / 2, (y0 + y1) / 2)):
             cp.add(p, lift(p))
-    else:
-        nose = pose.pt(NOSE)
-        if nose is not None:
-            cp.add(nose, lift(nose))
+    # Head keypoints ride along rigidly too, whether or not the face stage supplied a box.
+    for i in (NOSE, L_EYE, R_EYE, L_EAR, R_EAR):
+        p = pose.pt(i)
+        if p is not None:
+            cp.add(p, lift(p))
 
     def slim_pair(center, amount: float, fallback_half: float, reach: float):
         """Move the silhouette edges at ``center`` toward the axis by ``amount``."""
